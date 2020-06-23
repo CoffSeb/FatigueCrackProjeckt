@@ -1,0 +1,12 @@
+#!/bin/bash -l
+#SBATCH -p short
+#SBATCH -t 00:30:00
+#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=10
+#SBATCH --mem-per-cpu=1000
+#SBATCH -c 30
+#SBATCH -o Spesimen20.out
+module load matlab
+srun time -p matlab_multithread -nojvm -nosplash -r "Spesimen20 ; exit(0)"
