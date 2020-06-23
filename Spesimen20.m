@@ -30,7 +30,10 @@ crackTipX = 5526;
 crackTipY = 3092;
 m = 6720; %size of the image in x-axis
 n = 4480; %size of the image in y-axis
-for i = 1:25:N  %% Processing images one-by-one
+istep = 25;
+
+for i = 1:istep:N  %% Processing images one-by-one
+    j = 1+ round(i/istep) ;
     filename = images(i);    
     A = imread(filename);
 %%  image(A):
@@ -146,16 +149,16 @@ for i = 1:25:N  %% Processing images one-by-one
     imwrite(Tracker,trackName);
     
 
-    resultTable(i,1) = (startNumberImg-1) + i;    %% Image number
-    resultTable(i,2)= round(i*CyclesPerImage);  %% Cycle number as a result of averaging cycles per image. Total number of cycles devided per total number of images
-    resultTable(i,3) = crackTipX - (324 -Xsmallpix); %% Absolute X coordinates of the crack Tip on the image
-    resultTable(i,4) = crackTipY - (74 - Ysmallpix);  %% Absolute Y coordinates of the crack Tip on the image
-    resultTable(i,5) = (NotchX-crackTipX)*Scale;   %% Actual lenght of crack in X direction
-    resultTable(i,6) = (NotchY-crackTipY)*Scale;   %% Actual lenght of crack in Y direction
+    resultTable(j,1) = (startNumberImg-1) + i;    %% Image number
+    resultTable(j,2)= round(i*CyclesPerImage);  %% Cycle number as a result of averaging cycles per image. Total number of cycles devided per total number of images
+    resultTable(j,3) = crackTipX - (324 -Xsmallpix); %% Absolute X coordinates of the crack Tip on the image
+    resultTable(j,4) = crackTipY - (74 - Ysmallpix);  %% Absolute Y coordinates of the crack Tip on the image
+    resultTable(j,5) = (NotchX-crackTipX)*Scale;   %% Actual lenght of crack in X direction
+    resultTable(j,6) = (NotchY-crackTipY)*Scale;   %% Actual lenght of crack in Y direction
     %% resultTable(i-1,5) = 0.016768191; %% this line should be swithed on while processing partially
     %% resultTable(i-1,6) = -0.000969016; %% this line should be swithed on while processing partially
-    crackTipX = resultTable(i,3);
-    crackTipY = resultTable(i,4);
+    crackTipX = resultTable(j,3);
+    crackTipY = resultTable(j,4);
     %{
     graphIndex = 1;
     num1 =xlsread('results.xlsx')
@@ -197,7 +200,7 @@ cd ../lomakii1/Specimen20/img20200601/Tracker
 images = string(namesSort);
 
 N = length(inputImages); %How meny images there are
-step = 10
+step = 1
 %h = figure;
 gifname = 'CrackGif.gif';
 for i = 1:step:N  %% Processing images one-by-one
@@ -219,3 +222,4 @@ cd ../../../../coffenm1/
 
 toc
 %% cd("C:/Work/[3] Aalto/Crack propagation/FCG_project/Study/Fatigue crack propagation/Tools/crackTipTracking/Ivan/")
+
