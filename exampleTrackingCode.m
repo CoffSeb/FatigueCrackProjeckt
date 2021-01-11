@@ -1,41 +1,38 @@
-startNumberImg = 1; 
-NotchX = 5526; %% initial notch X coordinate from picture
-NotchY = 3092; %% initial notch Y coordinate from picture
+tic
 
-thresholdFactor = 1.75; %Threshold multiplier
+startNumberImg = 1;
+NotchX = 5999; %% initial notch X coordinate from picture
+NotchY = 3111; %% initial notch Y coordinate from picture
+thresholdFactor = 1.75; %treshold
 
-cd ../lomakii1/Specimen20/img20200601/ % moving to location where the pictures are located
+cd ../lomakii1/Specimen20/img20200601/
 
 inputImages = dir('SSP_*.JPG'); %Finding the input image name
 
-cd ../../../coffenm1/ % moving to where the notsortfiles are located
+cd ../../../coffenm1/
 
 names = {inputImages(:).name};
 namesSort = natsortfiles(names); %Sorting the files 
 
-cd ../lomakii1/Specimen20/img20200601/ % back to where the pictures are
+cd ../lomakii1/Specimen20/img20200601/
 
 images = string(namesSort);
 N = length(inputImages); %How meny images there are
-NumberOfCycles = 1062540; %% Total number of cycles from machine
-Scale = 5.2560417e-6; %% scale showing how many meters in one pixel
+NumberOfCycles = 1110304; %% Total number of cycles from machine
+Scale = 5.2521e-6; %% scale showing how many meters in one pixel
 CyclesPerImage = NumberOfCycles/N;
 resultTable = zeros([N 6]);
-%% cd('inputData\End\')
-mkdir("Tracker"); %Creating folder "Tracker"
-crackTipX = 5526;
-crackTipY = 3092;
+% cd('inputData\End\')
+mkdir("Tracker_1.75"); %Creating folder "Tracker"
+crackTipX = 5999;
+crackTipY = 3111;
 m = 6720; %size of the image in x-axis
 n = 4480; %size of the image in y-axis
-istep = 25; % number of steps (smaller = more datapoints and longer computing time)
-
-for i = 1:istep:N  %% Processing images one-by-one
-    j = 1+ round(i/istep) ;
+for i = 1:1000:N  %% Processing images one-by-one
     filename = images(i);    
     A = imread(filename);
-%%  image(A):
-%% This section consider crack branching in 1 predefined cases. If there are problematic noise in pictures you can block the problematic part.
-%
+%  image(A)
+% This section consider crack branching in 1 predefined cases. Block problematic noise using these.
 %{
         if i >= 1 && i <= 19999 %% 1
             A = A(:,:,1);
@@ -46,6 +43,8 @@ for i = 1:istep:N  %% Processing images one-by-one
             circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
             A(circlePix) = 3;
         end
+
+
    %% End of branches declaration
     %}
     B = A(crackTipY-74:crackTipY+75,crackTipX-324:crackTipX+75);
@@ -59,7 +58,7 @@ for i = 1:istep:N  %% Processing images one-by-one
     [biggest,idx] = max(numPixels);
     H = zeros([150 400]);
     H(G.PixelIdxList{idx}) = 255;
-    %% image(H);
+    % image(H);
     [rowX,colX] = find(H==255);
     member = 1:1:400;
     allRovs = ismember(member,colX);
@@ -78,21 +77,23 @@ for i = 1:istep:N  %% Processing images one-by-one
     Ysmallpix = ceil(mean(rowY,"all"));
     Tracker = insertShape(F,'circle', [Xsmallpix Ysmallpix 5],'LineWidth', 2, "Color","red");
     %%image(Tracker);
+
+    	
     trackName  = replace(filename, '.JPG', '.png');
-    trackName = fullfile('Tracker',trackName);
+    trackName = fullfile('Tracker_1.75',trackName);
     imwrite(Tracker,trackName);
     
-    %% Creating the table for export file
-    resultTable(j,1) = (startNumberImg-1) + i;    %% Image number
-    resultTable(j,2)= round(i*CyclesPerImage);  %% Cycle number as a result of averaging cycles per image. Total number of cycles devided per total number of images
-    resultTable(j,3) = crackTipX - (324 -Xsmallpix); %% Absolute X coordinates of the crack Tip on the image
-    resultTable(j,4) = crackTipY - (74 - Ysmallpix);  %% Absolute Y coordinates of the crack Tip on the image
-    resultTable(j,5) = (NotchX-crackTipX)*Scale;   %% Actual lenght of crack in X direction
-    resultTable(j,6) = (NotchY-crackTipY)*Scale;   %% Actual lenght of crack in Y direction
+
+    resultTable(i,1) = (startNumberImg-1) + i;    %% Image number
+    resultTable(i,2)= round(i*CyclesPerImage);  %% Cycle number as a result of averaging cycles per image. Total number of cycles devided per total number of images
+    resultTable(i,3) = crackTipX - (324 -Xsmallpix); %% Absolute X coordinates of the crack Tip on the image
+    resultTable(i,4) = crackTipY - (74 - Ysmallpix);  %% Absolute Y coordinates of the crack Tip on the image
+    resultTable(i,5) = (NotchX-crackTipX)*Scale;   %% Actual lenght of crack in X direction
+    resultTable(i,6) = (NotchY-crackTipY)*Scale;   %% Actual lenght of crack in Y direction
     %% resultTable(i-1,5) = 0.016768191; %% this line should be swithed on while processing partially
     %% resultTable(i-1,6) = -0.000969016; %% this line should be swithed on while processing partially
-    crackTipX = resultTable(j,3);
-    crackTipY = resultTable(j,4);
+    crackTipX = resultTable(i,3);
+    crackTipY = resultTable(i,4);
     %{
     graphIndex = 1;
     num1 =xlsread('results.xlsx')
@@ -109,34 +110,33 @@ for i = 1:istep:N  %% Processing images one-by-one
     %}
     
 end
-writematrix(resultTable, 'results.xlsx'); %saveing data as xlsx or csv 
+writematrix(resultTable, 'results_1.75.xlsx'); %saveing data as xlsx 
 
-%{
+
 
 %Saveing Graph 
-num = xlsread('results.xls')
+num = xlsread('results_1.75.xlsx')
 x=num(:,2); %Cycle number
 y=num(:,5); %X-crack length
 %figure;
 plot(x,y), ylabel('crack length'), xlabel('Cycle number'), title('Crack length to cycle number'),
 grid on;
 ax = gca;
-exportgraphics(ax, 'Graph.png');
-%}
-
+exportgraphics(ax, 'Graph9_1.75.png');
+%{
 %GIF maker-----------------
-cd Tracker/
+cd Tracker_1.75/
 inputImages = dir('SSP_*.png'); %Finding the input image name
-cd ../../../../coffenm1/
+cd ../
 names = {inputImages(:).name};
 namesSort = natsortfiles(names); %Sorting the files 
-cd ../lomakii1/Specimen20/img20200601/Tracker
+cd Tracker_1.75/
 images = string(namesSort);
 
 N = length(inputImages); %How meny images there are
-step = 1
-%h = figure;
-gifname = 'CrackGif.gif';
+step = 10
+h = figure;
+gifname = 'CrackGif_1.75.gif';
 for i = 1:step:N  %% Processing images one-by-one
     filename = images(i);    
     A = imread(filename);
@@ -149,11 +149,8 @@ for i = 1:step:N  %% Processing images one-by-one
           imwrite(imind,cm,gifname,'gif','WriteMode','append', 'DelayTime', 0.05); 
       end 
 end
-cd ../../../../coffenm1/
+cd ../
 
-
-
+%}
 
 toc
-%% cd("C:/Work/[3] Aalto/Crack propagation/FCG_project/Study/Fatigue crack propagation/Tools/crackTipTracking/Ivan/")
-
