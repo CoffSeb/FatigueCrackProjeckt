@@ -1,22 +1,19 @@
-%% cd("C:/Work/[3] Aalto/Crack propagation/FCG_project/Study/Fatigue crack propagation/Tools/crackTipTracking/Ivan/")
-tic
-
-startNumberImg = 1;
+startNumberImg = 1; 
 NotchX = 5526; %% initial notch X coordinate from picture
 NotchY = 3092; %% initial notch Y coordinate from picture
 
-thresholdFactor = 1.4; %Threshold multiplier
+thresholdFactor = 1.75; %Threshold multiplier
 
-cd ../lomakii1/Specimen20/img20200601/
+cd ../lomakii1/Specimen20/img20200601/ % moving to location where the pictures are located
 
 inputImages = dir('SSP_*.JPG'); %Finding the input image name
 
-cd ../../../coffenm1/
+cd ../../../coffenm1/ % moving to where the notsortfiles are located
 
 names = {inputImages(:).name};
 namesSort = natsortfiles(names); %Sorting the files 
 
-cd ../lomakii1/Specimen20/img20200601/
+cd ../lomakii1/Specimen20/img20200601/ % back to where the pictures are
 
 images = string(namesSort);
 N = length(inputImages); %How meny images there are
@@ -30,84 +27,21 @@ crackTipX = 5526;
 crackTipY = 3092;
 m = 6720; %size of the image in x-axis
 n = 4480; %size of the image in y-axis
-istep = 25;
+istep = 25; % number of steps (smaller = more datapoints and longer computing time)
 
 for i = 1:istep:N  %% Processing images one-by-one
     j = 1+ round(i/istep) ;
     filename = images(i);    
     A = imread(filename);
 %%  image(A):
-%% This section consider crack branching in 1 predefined cases.
+%% This section consider crack branching in 1 predefined cases. If there are problematic noise in pictures you can block the problematic part.
+%
 %{
         if i >= 1 && i <= 19999 %% 1
             A = A(:,:,1);
             Xo = 5999;
             Yo = 3111;
             Rad = 100;
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-
-        if i >= 18499 && i <= 19999 %% 2
-            A = A(:,:,1);
-            Xo = 4445;
-            Yo = 1864;
-            Rad = 40;
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 18499 && i <= 19999 %% 3
-            A = A(:,:,1);
-            Xo = 425;
-            Yo = 1936;
-            Rad = 21;
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 20000 && i <= 20999 %% 4
-            A = A(:,:,1);
-            Xo = 4318;
-            Yo = 1945;
-            Rad = 26;
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 38001 && i <= 22999 %% 5    
-            A = A(:,:,1);
-            Xo = 4136;
-            Yo = 1978;
-            Rad = 69;
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 23999 && i <= 24999 %% 6
-            A = A(:,:,1);
-            Xo = 3607;
-            Yo = 1929;
-            Rad = 23;   
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 25000 && i <= 25999 %% 7
-            A = A(:,:,1);
-            Xo = 3338;
-            Yo = 1813;
-            Rad = 100;     
-            [CrclX, CrclY] = meshgrid(1:m, 1:n);
-            circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
-            A(circlePix) = 3;
-        end
-        if i >= 26999 && i <= 27670 % 8
-            A = A(:,:,1);
-            Xo = 2027;
-            Yo = 1809;
-            Rad = 82;
             [CrclX, CrclY] = meshgrid(1:m, 1:n);
             circlePix = (CrclX - Xo).^2 + (CrclY - Yo).^2 <= Rad.^2;
             A(circlePix) = 3;
@@ -148,7 +82,7 @@ for i = 1:istep:N  %% Processing images one-by-one
     trackName = fullfile('Tracker',trackName);
     imwrite(Tracker,trackName);
     
-
+    %% Creating the table for export file
     resultTable(j,1) = (startNumberImg-1) + i;    %% Image number
     resultTable(j,2)= round(i*CyclesPerImage);  %% Cycle number as a result of averaging cycles per image. Total number of cycles devided per total number of images
     resultTable(j,3) = crackTipX - (324 -Xsmallpix); %% Absolute X coordinates of the crack Tip on the image
