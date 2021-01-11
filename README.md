@@ -6,6 +6,6 @@ My job was to study the spesimens with x-ray diffraction machine and to create p
 
 During the summer I cept a diary to track my work during the summer. Here is the daily work file in overleaf --> https://www.overleaf.com/read/cktmdvjknwgr
 
-This document contains the tracking software and x-ray diffraction results.
+This document contains the tracking software and x-ray diffraction results. There is also pdf file for my school about the internship (in finnish).
 
 
