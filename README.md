@@ -4,8 +4,6 @@ This project was part of my internship at Aalto University CSM ( complex systems
 
 My job was to study the spesimens with x-ray diffraction machine and to create program that can track the crack trough the aluminium spesimen while it experienses fatique stress sycles. The tracking software was made in matlab and run on the Triton supercomputer. The program can vary the sensitivity of the tracking and filter out unvanted noise from the image. The filtering is done trough goussian blur.
 
-During the summer I cept a diary to track my work during the summer. Here is the daily work file in overleaf --> https://www.overleaf.com/read/cktmdvjknwgr
-
 This document contains the tracking software and x-ray diffraction results. There is also pdf file for my school about the internship (in finnish).
 
 
